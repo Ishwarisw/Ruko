@@ -14,21 +14,39 @@ SIGNALS = {
         "weight": 4,
         "words": ["digital arrest", "डिजिटल अरेस्ट", "डिजिटल अटक",
                   "डिजिटल अटकेत", "गिरफ्तार", "अटक", "arrest warrant", "वारंट",
-                  "मनी लॉन्ड्रिंग", "मनी लॉन्डरिंग", "money laundering"],
+                  "मनी लॉन्ड्रिंग", "मनी लॉन्डरिंग", "money laundering",
+                  "illegal items", "illegal parcel"],
     },
     "secrecy": {
         "weight": 4,
         "words": ["किसी को मत बताइए", "किसी को न बताएं", "किसी को मत बताना",
                   "कोणाला सांगू नका", "कुणाला सांगू नका", "don't tell anyone",
                   "do not tell anyone", "घरवालों को मत", "परिवार को मत",
-                  "कॉल कट मत", "फोन मत काटिए", "कॉल कट करू नका"],
+                  "कॉल कट मत", "फोन मत काटिए", "कॉल कट करू नका",
+                  "confidential", "keep it secret", "गोपनीय", "गुप्त रखें"],
     },
     "money_demand": {
         "weight": 3,
         "words": ["पैसे ट्रांसफर", "पैसा ट्रांसफर", "पैसे भेज", "पैसा भेज",
                   "पैसे पाठवा", "पैसे पाठव", "ट्रांसफर करो", "ट्रांसफर कर",
-                  "transfer", "जमा करना", "verification के लिए", "सत्यापन",
-                  "सुरक्षित खाते", "safe account", "आरबीआई खाते"],
+                  "ट्रांसफर कीजिए", "ट्रांसफर करना", "transfer", "जमा करना",
+                  "verification के लिए", "सत्यापन"],
+    },
+    "safe_account": {
+        "weight": 4,
+        "words": ["सुरक्षित खाते", "सुरक्षित अकाउंट", "सुरक्षित खात्यात",
+                  "safe account", "आरबीआई खाते", "आरबीआई के खाते"],
+    },
+    "advance_fee": {
+        "weight": 4,
+        "words": ["लॉटरी", "lottery", "इनाम जीता", "प्रोसेसिंग फीस",
+                  "processing fee", "रजिस्ट्रेशन फीस", "लकी ड्रॉ"],
+    },
+    "remote_access": {
+        "weight": 4,
+        "words": ["स्क्रीन शेयर", "screen share", "anydesk", "teamviewer",
+                  "quicksupport", "ऐप डाउनलोड", "एप डाउनलोड", "app download",
+                  "remote access"],
     },
     "urgency": {
         "weight": 2,
@@ -38,8 +56,7 @@ SIGNALS = {
     "sensitive_info": {
         "weight": 3,
         "words": ["otp", "ओटीपी", "ओ टी पी", "पिन नंबर", "pin number", "cvv",
-                  "आधार नंबर", "aadhaar", "पासवर्ड", "password", "anydesk",
-                  "teamviewer"],
+                  "आधार नंबर", "aadhaar", "पासवर्ड", "password"],
     },
 }
 
@@ -75,18 +92,3 @@ def check(text):
     else:
         level = "NONE"
     return {"level": level, "score": score, "signals": found}
-
-
-if __name__ == "__main__":
-    import sys
-    sys.stdout.reconfigure(encoding="utf-8")
-    tests = [
-        "मैं पुलिस बोल रहा हूँ, आप डिजिटल अरेस्ट में हैं, किसी को मत बताइए और अभी पैसा ट्रांसफ़र करो।",
-        "मी पोलीस बोलतोय, तुम्ही डिजिटल अटकेत आहात, कोणाला सांगू नका आणि आत्ताच पैसे पाठवा.",
-        "आपका बैंक OTP शेयर कीजिए तुरंत",
-        "नमस्ते, आपका कूरियर कल सुबह 10:00 बजे पहुँच जाएगा।",
-        "I called you while shopping, I need a ride",
-    ]
-    for t in tests:
-        print(t)
-        print("  ->", check(t))

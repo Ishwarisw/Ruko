@@ -46,7 +46,12 @@
 - Credits used so far: (check the Usage page and write the number)
 - Streamlit: installed / blocked (write which)
 
-## 25 Oct 2026 - Day 2 (continued)
-- Added "I already sent money" tab: form -> spoken/printed summary for the 1930 call.
-- Uses plain code, no AI, because a form needs no model.
-- Limitation: wording not reviewed by cyber police; users must follow official guidance.
+## 25 Oct 2026 - Day 2
+- 30-line test, before tuning: scams caught 16/20, normal lines flagged 0/10.
+- Missed: safe-account transfer, lottery advance fee, English "illegal items/confidential", app download + screen share.
+- Added signals: safe_account, advance_fee, remote_access; more secrecy/money words.
+- After tuning: caught __/20, false alarms __/10. NOTE: tuned on same lines, so not a fair test. Need unseen set.
+- Marathi voice test: NOT done yet (marathi.ogg was a copy of the Hindi file).
+- Git: audio had been committed by mistake; fixed .gitignore and removed from tracking.git add .
+git commit -m "Day 2: tuned rules (safe account, advance fee, remote access)"
+git push
