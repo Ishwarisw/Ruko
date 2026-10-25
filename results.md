@@ -45,3 +45,8 @@
 - Marathi messages written by me, need a native-speaker review.
 - Credits used so far: (check the Usage page and write the number)
 - Streamlit: installed / blocked (write which)
+
+## 25 Oct 2026 - Day 2 (continued)
+- Added "I already sent money" tab: form -> spoken/printed summary for the 1930 call.
+- Uses plain code, no AI, because a form needs no model.
+- Limitation: wording not reviewed by cyber police; users must follow official guidance.
