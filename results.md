@@ -60,3 +60,9 @@
 - Marathi browser test: said "...", heard "...", level ___.
 - Limitation: demo uses one fixed contact; the family member must have started the bot.
 - Safety rule: Ruko never sends an alert on its own, only when the user presses the button..
+
+## 28 Oct 2026 - Day 5
+- Added large-text mode.
+- Fresh-set result: scams caught __/__, false alarms __/__ (rules untouched before this run).
+- User test with ___ (relation/age): hesitated at ___, understood ___, said ___.
+- Credits left: ____

@@ -13,7 +13,25 @@ st.caption("A calm voice that warns you about scam calls. Demo with synthetic da
 
 lang_label = st.selectbox("Language / भाषा", ["हिंदी (Hindi)", "मराठी (Marathi)"])
 code = "hi-IN" if "Hindi" in lang_label else "mr-IN"
-
+big = st.toggle("🔍 Large text (बड़े अक्षर)", value=True)
+if big:
+    st.markdown(
+        """
+        <style>
+        html, body, [class*="css"], p, label, li { font-size: 22px !important; }
+        h1 { font-size: 2.4rem !important; }
+        h3 { font-size: 1.8rem !important; }
+        .stButton > button {
+            font-size: 24px !important;
+            padding: 0.8rem 1.4rem !important;
+            border-radius: 12px !important;
+            width: 100%;
+        }
+        .stTabs [data-baseweb="tab"] { font-size: 20px !important; padding: 12px 18px !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 @st.cache_data(show_spinner=False)
 def cached_voice(text, voice, lang):

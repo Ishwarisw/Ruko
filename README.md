@@ -25,3 +25,10 @@ Only synthetic or self-recorded test data. No real phone numbers, accounts or re
 
 ## Status
 See `results.md` for daily test results and known limitations.
+
+## Known limitations
+- Cannot listen to normal phone calls by itself. The user speaks to Ruko or uses speaker mode.
+- Scam detection is keyword-and-context based. On a first fair test with sentences I had not seen, it caught 2/10 scams and flagged 3/7 normal lines. After tuning it improved, but that second result is not a fair test.
+- Marathi warning text has not been fully reviewed by a native speaker.
+- The family alert goes to one fixed Telegram contact and only when the user presses the button.
+- Not a replacement for police, banks or the 1930 helpline.
