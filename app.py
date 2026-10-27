@@ -1,9 +1,11 @@
-# app.py - Ruko screen: speak -> check -> spoken warning, plus 1930 helper
+# app.py - Ruko: check a call, family alert, 1930 helper, practice mode
 import streamlit as st
 from gnani_client import transcribe_bytes, speak_bytes
 from scam_rules import check
 from messages import MESSAGES
 from summary_1930 import build_summary
+from alert import send_family_alert
+from practice import PRACTICE
 
 st.set_page_config(page_title="Ruko", page_icon="🛑")
 st.title("🛑 Ruko: रुको, पहले पूछो")
@@ -12,7 +14,14 @@ st.caption("A calm voice that warns you about scam calls. Demo with synthetic da
 lang_label = st.selectbox("Language / भाषा", ["हिंदी (Hindi)", "मराठी (Marathi)"])
 code = "hi-IN" if "Hindi" in lang_label else "mr-IN"
 
-tab1, tab2 = st.tabs(["🎤 Check a call", "🚨 I already sent money"])
+
+@st.cache_data(show_spinner=False)
+def cached_voice(text, voice, lang):
+    """Remember generated audio so repeated clicks do not use more credits."""
+    return speak_bytes(text, language=lang, voice=voice)
+
+
+tab1, tab2, tab3 = st.tabs(["🎤 Check a call", "🚨 I already sent money", "🎯 Practice"])
 
 with tab1:
     st.write("Press the mic, say what the caller is telling you, then press Stop.")
@@ -24,31 +33,44 @@ with tab1:
         try:
             with st.spinner("Listening..."):
                 text = transcribe_bytes(audio.getvalue(), audio.name or "audio.wav", code)
-            st.subheader("What I heard")
-            st.write(text)
-
             result = check(text)
-            level = result["level"]
-            colors = {"HIGH": "red", "MEDIUM": "orange", "LOW": "blue", "NONE": "gray"}
-            st.markdown(f"### Risk level: :{colors[level]}[{level}]")
-            if result["signals"]:
-                st.write("Warning signs found:", ", ".join(result["signals"].keys()))
-
-            message = MESSAGES[code][level]
-            st.info(message)
-
+            message = MESSAGES[code][result["level"]]
             with st.spinner("Preparing voice..."):
                 wav = speak_bytes(message, language=code)
-            st.audio(wav, format="audio/wav", autoplay=True)
-
-            st.warning("Ruko cannot prove a call is safe. If anyone asks for money or secrecy, "
-                       "stop and call your family or 1930.")
+            st.session_state["last"] = {
+                "text": text, "result": result, "message": message, "wav": wav, "code": code,
+            }
+            st.session_state.pop("alert_status", None)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
+    last = st.session_state.get("last")
+    if last:
+        level = last["result"]["level"]
+        colors = {"HIGH": "red", "MEDIUM": "orange", "LOW": "blue", "NONE": "gray"}
+        st.subheader("What I heard")
+        st.write(last["text"])
+        st.markdown(f"### Risk level: :{colors[level]}[{level}]")
+        if last["result"]["signals"]:
+            st.write("Warning signs found:", ", ".join(last["result"]["signals"].keys()))
+        st.info(last["message"])
+        st.audio(last["wav"], format="audio/wav")
+
+        if level in ("HIGH", "MEDIUM"):
+            st.write("Want a family member to know right now?")
+            if st.button("📲 Alert my family"):
+                ok, msg = send_family_alert(level, last["text"], last["code"])
+                st.session_state["alert_status"] = (ok, msg)
+            status = st.session_state.get("alert_status")
+            if status:
+                (st.success if status[0] else st.error)(status[1])
+
+        st.warning("Ruko cannot prove a call is safe. If anyone asks for money or secrecy, "
+                   "stop and call your family or 1930.")
+
 with tab2:
     st.error("Call **1930** (cyber crime helpline) right now. Do not wait. "
-             "Then also report on the official cybercrime portal. Fill this in first so you can read it out.")
+             "Fill this in first so you can read it out.")
     st.caption("Use fake data in this demo. Nothing is saved or sent.")
     when = st.text_input("When did you send the money? (date and time)")
     amount = st.text_input("Amount (rupees)")
@@ -69,3 +91,34 @@ with tab2:
         except Exception as e:
             st.error(f"Voice failed: {e}")
         st.download_button("Download as text", summary, file_name="summary_1930.txt")
+
+with tab3:
+    st.write("Listen to a made-up call and decide: **scam or normal?** "
+             "Practising when you are calm helps when a real call comes.")
+    st.caption("All calls are synthetic. Play audio is generated once and reused.")
+
+    names = [p["title"] for p in PRACTICE]
+    choice = st.selectbox("Choose a call", names)
+    item = PRACTICE[names.index(choice)]
+
+    if st.button("▶ Play this call"):
+        try:
+            with st.spinner("Preparing call..."):
+                st.session_state["practice_audio"] = cached_voice(item["text"], item["voice"], "hi-IN")
+                st.session_state["practice_for"] = choice
+        except Exception as e:
+            st.error(f"Voice failed: {e}")
+
+    if st.session_state.get("practice_for") == choice:
+        st.audio(st.session_state["practice_audio"], format="audio/wav")
+
+    guess = st.radio("What do you think?", ["Scam", "Normal"], horizontal=True, index=None)
+    if guess and st.button("Show the answer"):
+        correct = (guess == "Scam") == item["is_scam"]
+        if correct:
+            st.success("Correct! Well done.")
+        else:
+            st.error("Not this time, and that is okay. This is how we learn.")
+        st.write("**Why:**", item["why"])
+        with st.expander("Transcript"):
+            st.write(item["text"])
