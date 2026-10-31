@@ -8,11 +8,13 @@ from alert import send_family_alert
 from practice import PRACTICE
 
 st.set_page_config(page_title="Ruko", page_icon="🛑")
-st.title("🛑 Ruko: रुको, पहले पूछो")
-st.caption("A calm voice that warns you about scam calls. Demo with synthetic data only.")
+
+st.markdown("# 🛑 रुको। पहले पूछो।")
+st.markdown("**A calm voice that warns you about scam calls.** Demo uses made-up data only.")
 
 lang_label = st.selectbox("Language / भाषा", ["हिंदी (Hindi)", "मराठी (Marathi)"])
 code = "hi-IN" if "Hindi" in lang_label else "mr-IN"
+
 big = st.toggle("🔍 Large text (बड़े अक्षर)", value=True)
 if big:
     st.markdown(
@@ -33,6 +35,7 @@ if big:
         unsafe_allow_html=True,
     )
 
+
 @st.cache_data(show_spinner=False)
 def cached_voice(text, voice, lang):
     """Remember generated audio so repeated clicks do not use more credits."""
@@ -41,6 +44,7 @@ def cached_voice(text, voice, lang):
 
 tab1, tab2, tab3 = st.tabs(["🎤 Check a call", "🚨 I already sent money", "🎯 Practice"])
 
+# ---------------------------------------------------------------- Tab 1
 with tab1:
     st.write("Press the mic, say what the caller is telling you, then press Stop.")
     recorded = st.audio_input("Record")
@@ -86,6 +90,7 @@ with tab1:
         st.warning("Ruko cannot prove a call is safe. If anyone asks for money or secrecy, "
                    "stop and call your family or 1930.")
 
+# ---------------------------------------------------------------- Tab 2
 with tab2:
     st.error("Call **1930** (cyber crime helpline) right now. Do not wait. "
              "Fill this in first so you can read it out.")
@@ -110,10 +115,11 @@ with tab2:
             st.error(f"Voice failed: {e}")
         st.download_button("Download as text", summary, file_name="summary_1930.txt")
 
+# ---------------------------------------------------------------- Tab 3
 with tab3:
     st.write("Listen to a made-up call and decide: **scam or normal?** "
              "Practising when you are calm helps when a real call comes.")
-    st.caption("All calls are synthetic. Play audio is generated once and reused.")
+    st.caption("All calls are synthetic. Audio is generated once and reused.")
 
     names = [p["title"] for p in PRACTICE]
     choice = st.selectbox("Choose a call", names)
